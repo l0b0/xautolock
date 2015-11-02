@@ -1,0 +1,44 @@
+
+This  file  contains   special   notes   concerning   VMS  platforms.  All
+information on how to fix the issues described below  is welcome, provided
+it is complete,  clean, and  (most of all)  working.  We have no access to
+VMS, hence we cannot test anything ourselves!
+
+1. The  VMS  port  of xautolock is not complete.  Some known functionality
+   problems are:
+
+    + Multi-headed displays may not be supported under VMS.
+
+    + The -notifier option may either misbehave or even not work at
+      all on VMS.
+
+    + The -unlocknow option only works on some VMS versions 
+      (if it compiles, it should also work on the same machine).
+    
+    + The -killpid option might fail to work.
+
+2. Due to some  VMS quirks,  the inner workings  of which  are  a complete
+   mystery to us,  there seems  to be something  not quite right  with the
+   code  used to detect  the presence  of the locker  during the first few 
+   seconds  of its existence.   This sometimes manifests itself as follows
+   (quoting from the original problem report):
+
+     "One  person reported that  using the corners options,  he  had a
+     problem.  Apparently, if we guessed right,  if it takes more than
+     5 seconds for the locker to start, the timer will time out again,
+     and fire off a second locker screen."
+
+   While this cannot ever occur on UNIX,  even if the locker takes several
+   hours to start, it does seem to be possible under VMS. As a workaround,
+   the code contains  a conditional sleep() call  right after starting the
+   locker,  which can be compiled in be #define-ing SLOW_VMS.  By default,
+   this is not used.
+
+   Obviously,  defining  SLOW_VMS  will influence  the timing behaviour of
+   xautolock in ways which are incompatible with what is stated in the man
+   page.
+
+Note  for users of previous versions:  xautolock is no longer sensitive to
+the   sometimes  serious  mistimings   caused  by  the  braindead  sleep()
+implementation of VMS.  It may therefore  be needed  to modify your  -time
+and -cornerdelay settings.

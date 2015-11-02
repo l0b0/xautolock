@@ -1,0 +1,240 @@
+ 
+PURPOSE
+=======
+
+Xautolock  monitors  console activity  under the X window system, and
+fires  up  a  program  of your choice if  nothing  happens  during  a
+user configurable  period of time.  You can use this to automatically
+start up a screen locker in case you tend to forget to do so manually
+before having a coffee break.
+
+Xautolock  will  typically  be used to lock the screen but it  really
+doesn't care what program you make it start. The only real assumption
+made  by  xautolock  is that  a new countdown  starts  as soon as the
+locker exits. 
+
+ 
+WHAT'S NEW
+==========
+ 
+Nearly 6 years after the release of version 2.1,  version 2.2 fixes a
+few  minor things,  but most of all features  freshly updated contact
+information, as I have left my previous employer in 2006.
+
+For more details on any of the changes, refre to the Changelog file.
+
+ 
+HOW TO USE IT
+=============
+ 
+Just read the man page, it's really simple.
+
+If you're on VMS, you should also check out the VMS.notes file.
+
+
+HOW IT WORKS
+============
+
+If  xautolock  has been compiled to  support either the Xidle, or the
+MIT ScreenSaver  extensions  (or both),  it first tries  to find  out
+whether the X server also supports one of them. If it does, xautolock
+will  periodically  call it to  determine the amount of time  elapsed 
+since the last input event, and will then base its actions upon that.
+
+In the absence of both extensions, xautolock starts by traversing the
+window tree,  selecting  SubstructureNotify on all windows and adding
+each window to a temporary list.  About +- 30 seconds later, it scans
+this  list,  asking  for  KeyPress  events.  However, it  takes  care
+to interfere  as  little  as  possible  with  the  event  propagation
+mechanism.  This is the  reason  for the  delay  between  the  moment
+xautolock  learns  about  a new window  (and  consequently  asks  for
+SubstructureNotify  events)  and  the  moment  it  asks for  KeyPress
+events. Whenever a new window is created by an application, a similar
+process takes place.  In contradiction  to what many people  believe,
+this scheme does not cause a noticeable overhead. 
+
+In addition, xautolock periodically issues a  QueryPointer request in
+order to  find out  whether  the pointer has moved  and implement the
+"corners" feature as decribed in the man page.
+
+If nothing happens within a user-specified period of time,  xautolock
+will fire up a program  which is supposed  to lock the screen.  While
+this program is running, xautolock itself remains on the look-out for
+user interaction.
+
+
+COMPILING XAUTOLOCK
+===================
+
+Xautolock should compile straight out of the box. Here's the recepy:
+
+ 1. Edit the Imakefile to your likings.
+
+ 2. Type:
+
+     xmkmf 
+     make
+     make install
+     make install.man
+     make clean 
+
+ 3. Have fun.
+
+If this procedure fails, the most likely reason is the absence of the
+MIT ScreenSaver extension on your system. If this is the case, simply
+edit the Imakefile accordingly and try again.
+
+If compilation fails because MIT ScreenSaver is not available, do the
+following:
+
+ + Find out  whether the  X server  supports it  (use the  xdpyinfo
+   command for this).  Quite often it will, even if the support for
+   compiling  programs  with it is absent.  If this applies to you,
+   nag  your sysadmin and/or vendor about it.  MIT ScreenSaver is a
+   pretty  standard extension that IMHO should be provided with any
+   X based system.
+
+ + If you  cannot  find MIT ScreenSaver,  repeat the same procedure
+   with  Xidle  (except  for the  `nag your vendor'  bit).  If your
+   server  supports  Xidle,  but  you do not have  the  development 
+   files and  cannot  find them on the web, just send me and e-mail
+   and I will forward you a copy.
+
+ + If you are still out of luck, use the good old backup mechanism.
+   Xautolock wil be just as happy without server extensions.
+
+Nowadays,  all modern X servers come with  MIT ScreenSaver.  However, 
+some (or most/all?) of the HP ones  apparently  don't,  so by default 
+this feature is  disabled  on HP-UX. Simply edit the Imakefile if you
+disagree.
+ 
+
+KNOWN BUGS
+==========
+
+Important notice:  the first two bugs listed here are only present in
+case xautolock  has been compiled with support for neither the  Xidle
+nor the  MIT ScreenSaver  extensions,  or in case the X server  being
+used does not support them.  They make up a good reason to get one of
+these extensions installed.  
+
+ 1. If, when creating a window,  an application waits for more than
+    30 seconds before calling selecting KeyPress events on non-leaf
+    windows,   xautolock  may interfere with the event  propagation
+    mechanism.  This  effect  is  theoretical  and  has never  been
+    observed  in real life. 
+
+ 2. Xautolock  can not properly handle  the secure keyboard mode of
+    xterm, since  that  will prevent any other  process,  including
+    xautolock,  from  noticing  the  keyboard  events  aimed at the
+    xterm.  Consequently, xautolock sometimes will think that there
+    is no keyboard activity while in reality there is.
+
+ 3. Under some configurations, xautolock fails to exit upon logout.
+    This  problem can occur  (but does not always do so)  under the
+    following combined circumstances:
+
+     + Xautolock is started in background from within a .xinitrc.
+     + Your are trusting your windowmanager to kill all X processes
+       when quitting  (which, by the way, is not a good idea).  One
+       well known  source of problems in this area consists of olwm
+       and its look-alikes.
+     + The .xinitrc contains a "wait"  statement to make it collect
+       all background processes upon logout.
+
+    The  simplest workround for this problem is to start  xautolock
+    from within a subshell. I.e. use this:
+    
+      ( xautolock & )
+
+    On Solaris  an alternative solution  (which basically works  in 
+    exactly the same way) is to use this:
+
+      toolwait xautolock 
+
+ 4. The -disable,  -enable,  -toggle,  -exit, -locknow, -unlocknow,
+    and  -restart  options  depend on  access to the X server to do 
+    their work.  This implies  that  they will be suspended in case 
+    some other application has grabbed the server all for itself.
+    
+ 5. Xautolock  does not check  whether  the screen locker specified
+    actually is available.
+
+ 6. The xautolock resources have a dummy resource classes.
+
+If you can find others, please notify mce@scarlet.be.
+
+Note that,  while  I still scan most  X related newsgroups,  I do not
+actually  read  them on a  regular basis  anymore,  as X no longer is
+a part of my job.  I do still  actively  support xautolock on a daily
+basis, though.  Hence you are  much more likely to get  quick help if 
+you contact me directly.
+
+
+WARNING
+=======
+
+It looks like there is a bug in  the event management code of some  X
+servers  (amongst  which  both  X11R4 and  X11R5 on older versions of 
+SunOS).  If you are using  version 1.7 of xautolock (previously known
+as patchlevel 7), it is best to reset  the server before switching to
+version 1.8 or later.  If you fail to do so, an old  version 1.7  bug
+may  still show up.  (Some keyboard  events were  being  hijacked  by 
+version 1.7  of  xautolock, particularly when using tvtwm). 
+
+
+CONTRIB DIRECTORY
+=================
+
+The  contrib  directory may  contain  various patches  that have been 
+contributed over time. If a patch is in there, I have for some reason
+or  another decided not to include it in xautolock proper,  but still
+consider  it to be sufficiently usefull  to other people  in order to
+add it to the distribution.
+
+Note  that the contents of  the contrib directory are  *not*  part of
+xautolock. Each of the contributions lives under its own copyright.
+
+In versions 2.1 and 2.2 of xautolock, the contrib  directory is empty,
+since due to a lack of time I did not feel like porting the stuff that
+used to be in there prior to the 2.x versions.  Maybe it'll be back in
+2.3 or so.
+
+
+COPYRIGHT
+=========
+ 
+Copyright  1990, 1992-1999, 2001-2002, 2004, 2007  by Stefan De Troch
+and Michel Eyckmans.
+
+Versions 2.0 and above of xautolock  are available under version 2 of
+the GNU GPL.  Earlier versions are available under other  conditions.
+For more information, see the License file.
+
+ 
+AUTHORS
+=======
+
+Xautolock was conceived, written, and performed by:
+
+ Michel Eyckmans (MCE)       mce@scarlet.be
+ Stefan De Troch             <e-mail private>
+
+Please  send queries for help, feature suggestions, bug reports, etc.
+to mce@scarlet.be only.
+
+
+ACKNOWLEDGEMENTS
+================
+
+Special thanks to:
+
+ Kris Croes                  croes@imec.be
+
+And the many people who submitted bug reports, patches, suggestions,
+kudos, etc.
+
+No thanks to a certain commercial X server provider who  volunteered
+to beta test version 1.9 on many,  *many* platforms  but didn't live
+up to it.  Also our apologies to the candidate beta testers who were
+not retained because of this candidate.

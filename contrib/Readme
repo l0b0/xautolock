@@ -1,0 +1,21 @@
+
+Xautolock contrib directory
+---------------------------
+
+The contrib directory contains various patches that other people have
+contributed to xautolock.
+
+If a patch is in there, I have for some reason or another decided not
+to include it in xautolock proper, but consider it to be sufficiently
+useful to other people in order to still add it to the distribution.
+
+Note  that the contents of  the contrib directory are  *not*  part of
+xautolock. Each contribution lives under its own copyright(s).
+
+Also note that I do *not* actively support the content of the contrib
+directory  (in contrast to  what is the case  for xautolock  itself). 
+Use at your own risk.
+
+     MCE
+
+---------------------------------------------------------------------

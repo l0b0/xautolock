@@ -1,0 +1,69 @@
+/************************************************************************/
+/*  Imakefile for xautolock. Edit to your likings.                      */
+/************************************************************************/
+
+/*
+ *  Tell it what extensions to use.
+ */
+#ifndef HPArchitecture
+#define HasScreenSaver 1  /* By default assume to have MIT ScreenSaver, */
+#else
+#define HasScreenSaver 0  /* except on HP machines (sigh...)            */
+#endif
+
+#define HasXidle       0  /* By default assume not to have Xidle.       */
+
+/*
+ *  Uncomment the following if you want xautolock to read your 
+ *  .Xdefaults file as a last resort for getting resource info.
+ *  This is not a good idea. For the reason why, see the comment
+ *  about it in src/options.c. This is not implemented on VMS.
+ */
+/*#define ReadXdefaultsFile */
+
+/************************************************************************/
+/*  No modifications needed below this line if you're not using Xidle.  */
+/************************************************************************/
+
+#if HasScreenSaver
+HASSAVER        = -DHasScreenSaver
+SAVERLIB        = $(XSSLIB)
+DEPSAVERLIB     = $(DEPXSSLIB)
+#endif
+
+#if HasXidle
+HASXIDLE        = -DHasXidle
+/*
+ *  Since Xidle is rather rare, I don't know of a generic way to
+ *  refer to the required libraries and include files. Users of
+ *  xidle will thus have to tweak things by hand here.
+ */
+#endif
+
+#if HasVFork
+VFORK           = -DHasVFork
+#endif 
+
+#ifdef OSF
+EXTRA_DEFINES   = -DSYSV      /* Solves wait() problems on DEC OSF/1. */
+#endif 
+
+SRCS            = src/diy.c src/options.c src/message.c src/state.c \
+                  src/engine.c src/xautolock.c
+OBJS            = $(SRCS:.c=.o)
+INCLUDES        = -Iinclude
+
+LOCAL_LIBRARIES = $(SAVERLIB) $(XLIB)
+DEPLIBS         = $(DEPSAVERLIB) $(DEPXLIB)
+DEFINES         = $(PROTOTYPES) $(VOIDSIGNAL) $(VFORK) \
+	          $(HASXIDLE) $(HASSAVER)
+
+.c.o:
+	$(CC) $(CFLAGS) -c $*.c -o $*.o 
+
+ComplexProgramTarget(xautolock)
+
+clean::
+	$(RM) $(OBJS)
+
+distclean:: clean

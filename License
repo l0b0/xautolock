@@ -1,0 +1,20 @@
+Xautolock licensing
+===================
+
+Versions 2.0 and above of xautolock can be modified and/or redistributed 
+under the terms of version 2 of the GNU General Public License as published
+by the Free Software Foundation.
+
+Note that this General Public License does not permit incorporating version 
+2.0 and above of xautolock into programs that are distributed under terms 
+incompatible with those of the GNU General Public License. If this limitation
+is a problem for you, please consider using the earlier versions 1.7 to 1.15 
+of xautolock (previously known as "patchlevel 7" to "patchlevel 15"). These
+earlier versions can be redistributed and/or modified under a simple "for
+non-commercial use" license. On demand, these earlier versions can also be
+made available under other conditions on a case by case basis.
+
+This program is distributed WITHOUT ANY WARRANTY; without even the implied
+warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+

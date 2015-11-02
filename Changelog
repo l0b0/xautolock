@@ -1,0 +1,321 @@
+
+ xautolock
+ =========
+
+ Authors : Michel Eyckmans (MCE) & Stefan De Troch (SDT)
+
+ History : - Version 1.0  implemented on 22/07/1990
+           - Version 1.1  for private use only
+           - Version 1.2  for private use only
+           - Version 1.3  for private use only
+           - Version 1.4  for private use only
+           - Version 1.6  for private use only
+           - Version 1.7  released on 07/04/1992
+           - Version 1.8  released on 15/05/1992
+           - Version 1.9  released on 24/01/1995
+           - Version 1.10 released on 22/02/1995
+           - Version 1.11 released on 03/11/1997
+           - Version 1.12 released on 09/08/1998
+           - Version 1.13 released on 13/08/1998
+           - Version 1.14 released on 18/11/1998
+           - Version 1.15 released on 13/03/1999
+           - Version 2.0  released on 06/05/2001
+           - Version 2.1  released on 16/01/2002
+           - Version 2.2  released on 28/12/2007
+
+ Review  : - 28/12/2007 (MCE) :
+             . Make `gcc -Wall' shut up about irrelevant stuff,
+	       even if it's gcc 4.0 we're talking about.
+           - 30/09/2007 (MCE) :
+             . Updated contact information to reflect some turbulent
+	       events of 2006.
+           - 08/09/2004 (MCE) :
+             . Make `gcc -Wall' shut up about irrelevant stuff,
+	       even if it's gcc 3.4 we're talking about (patch
+	       apparently by Pawel Worach <pawel.worach@telia.com>).
+           - 20/04/2004 (MCE) :
+             . Added the `-detectsleep' option (original patch by
+	       Cedric Pradalier <cedric.pradalier@inrialpes.fr>.)
+           - 12/12/2001 (MCE) :
+	     . Made the `-notify' option work again. (Bug reported
+	       by Matanya Elchanani <matanya@bridgeport.edu>.)
+           - 10/09/2001 (MCE) :
+	     . Re-ported to OpenVMS. (Once more thanks to Jouk 
+	       Jansen <joukj@hrem.stm.tudelft.nl>.)
+           - 05/05/2001 (MCE) :
+	     . Disable the reading of $HOME/.Xdefaults files by
+	       default. It's a bad idea. Users should always use
+	       xrdb to process these. For more information, see
+	       the comment in src/options.c.
+             . More general clean up.
+	     . Version 2.0 and above are GPL-ed.
+           - 16/04/2001 (MCE) :
+             . Finished the initial 2.0 work by recombining the 
+               pieces into a more understandable structure.
+           - 23/03/2001 (MCE) :
+             . Started work on the 2.0 version by finally cutting
+               the big mess into little pieces and ANSIfying them.
+           - 01/11/1999 (MCE) :
+             . Added the "-restart" option.
+           - 02/09/1999 (MCE) :
+             . On UNIX, only prepend the locker commands with `exec' 
+               if they actually contain only a single command. (Bug
+               reported by Guenther Grau <Guenther.Grau@bosch.com>.)
+             . Removed some old and no longer used VMS cruft.
+           - 01/06/1999 (MCE) :
+             . Ignore any message found during the very first call
+               to LookForMessages().
+           - 06/04/1999 (MCE) :
+             . Minor improvements to the VMS port. (Again thanks 
+               to Jouk Jansen <joukj@hrem.stm.tudelft.nl>.)
+           - 11/03/1999 (MCE) :
+             . Fixed the communication code to always do the right
+               thing when handling "-exit".
+           - 16/02/1999 (MCE) :
+             . Ripped out the use of signals to communicate with
+               other xautolock processes. This removes the limit
+               on the number of possible messages (yesterday's
+               change was pushing that very hard) and makes things 
+               more portable as well.
+           - 15/02/1999 (MCE) :
+             . Added the "-locknow", "-unlocknow", and "-nowlocker"
+               options. (Thanks to Timo J Rinne <tri@iki.fi> for the
+               original patch (slightly modified by me).)
+             . Some minor clean up.
+           - 05/02/1999 (MCE) :
+             . The VMS port should now actually work more or less.
+               (Thanks to Jouk Jansen <joukj@hrem.stm.tudelft.nl>
+               for taking the trouble to actually submit a patch.)
+             . Fixed an include file conflict on AIX. (Also thanks 
+               to Jouk Jansen <joukj@hrem.stm.tudelft.nl>.)
+           - 19/10/1998 (MCE) :
+             . Added the "-exit" option. (Based on a patch by 
+               Yakov Yukhnovetsky <yakov.yukhnovetsky@telrad.co.il>.)
+           - 11/08/1998 (MCE) :
+             . Include pwd.h to make the $HOME/.Xdefaults stuff
+               compile on more platforms. (Problem reported by
+               Jens Schleusener <Jens.Schleusener@dlr.de>.)
+           - 09/08/1998 (MCE) :
+             . Plugged a memory leak in the $HOME/.Xdefaults code.
+             . Updated this changelog to always mention the full 
+               names of people. Provided I know them, that is...
+           - 03/06/1998 (MCE) :
+             . Extended the (unreleased) debugging code somewhat.
+           - 08/04/1998 (MCE) :
+             . Cleaned up some of the stuff that LCLint complained 
+               about (but definitely not all of it).
+           - 14/11/1997 (MCE) :
+             . Read resources from $HOME/.Xdefaults as a last resort.
+               (Suggested by Marc Baudoin <Marc.Baudoin@solsoft.com>.)
+           - 27/10/1997 (MCE) :
+             . Added support for the MIT ScreenSaver extension.
+             . Made gcc -Wall shut up on Linux and HP-UX 10.
+           - 25/10/1997 (MCE) :
+             . Merged in lots of VMS portability fixes taken 
+               from the latest VMS version. (Original code
+               by Hunter Goatley <goathunter@madgoat.com>.) Untested!
+             . Replaced the "-killpid" option with the "-killer"
+               one to allow for more flexibility.
+           - 10/08/1997 (MCE) :
+             . On VMS, use LIB$SPAWN rather than vfork to work
+               around DECC/VAXC interoperability problems. (Taken
+               from one of the many VMS branch versions.) Untested!
+             . Added code to properly handle the -locker option
+               to the VMS version. (Based on a patch by
+               Erez Gur <gur.erez@a1.tavis.iso.mts.dec.com>.) Untested!
+           - 30/06/1997 (MCE) :
+             . Added the "-resetsaver" option to aid people with
+               DPMS monitors. (Triggered by Ian Rawlings 
+               <ian@tarcus.demon.co.uk>.)
+           - 03/04/1997 (MCE) :
+             . Cleaned up the (unreleased) debugging code.
+             . Fixed some minor bugs concerning "-killpid" and
+               "-killtime".
+           - 21/08/1996 (MCE) :
+             . Do not free() the return value of getenv().
+               (Pointed out by Stefan Jais <stefan.jais@pr-steyr.ac.at>.)
+           - 25/06/1996 (MCE) :
+             . General clean up.
+           - 23/06/1996 (MCE) :
+             . Incorporated the "-secure", "-killtime" and
+               "-killpid" options. (Based on a patch provided
+               by Tony Mione <mione@nbcs.rutgers.edu>.)
+           - 07/05/1996 (MCE) :
+             . Allow the user to exploit the entire range of
+               bell_percent values supported by XBell().
+               (Suggested by Eddy De Greef <degreef@imec.be>.)
+           - 29/04/1996 (MCE) :
+             . Fixed a serious problem with the Xidle support.
+               (Thanks to Lam N <lamn@cs.cuhk.hk> for attracting my
+               attention to this one.)
+           - 28/01/1996 (MCE) :
+             . Minor stylistic editing.
+           - 15/05/1995 (MCE) :
+             . Removed the INITIAL_SLEEP stuff.
+           - 08/05/1995 (MCE) :
+             . Fixed a race condition in SelectEvents ().
+           - 21/04/1995 (MCE) :
+             . Better wording of the copyright notice 
+               (no fundamental change).
+           - 28/02/1995 (MCE) :
+             . Added correct setup of the standard WM properties.
+           - 21/02/1995 (MCE) :
+             . Initial cleaning up of the #ifdef and #include stuff.
+             . Be less pedantic when validating the notification
+               margin if the `corners' feature is not being used.
+             . Fixed a horrificly stupid blooper that was sometimes 
+               causing the thing not to work at all. (Thanks to
+               Don Lewis <gdonl@gv.ssi1.com> and Ben Suurmeijer
+               <ben@telecom.ptt.nl> for attracting my attention 
+               to this one.)
+           - 01/02/1995 (MCE) :
+             . Added a few unused intialisations because otherwise
+               some compilers complain about them missing.
+           - 23/01/1995 (MCE) :
+             . Fixed various things ProLint complained about.
+             . Fixed yet another minor oversight in option handling.
+           - 20/01/1995 (MCE) :
+             . Take the modifier mask into account when looking
+               for pointer activity. (Idea taken from xscreensaver,
+               which is by Jamie Zawinski <jwz@mcom.com>.)
+             . Fixed a minor oversight in option handling.
+             . Fixed some uninitialised memory problems, a rare
+               null pointer dereference and a small memory leak.
+               (Purify sure is a great tool!)
+           - 03/01/1995 (MCE) :
+             . Finally solved the logout problems under OpenWinDows.
+               (Thanks to the many people who reported this one in
+               the past, and in particular to John Kent 
+               <badger@ssd.intel.com> for putting me on the right track.)
+             . Some minor cosmetic changes.
+           - 21/11/1994 (MCE) :
+             . Added "#ifdef"s as needed by Novell Unixware. 
+               (Thanks to Thanh Ma <tma@encore.com> for reporting this.)
+             . Plugged a minor memory leak in the resource
+               management code.
+           - 10/11/1994 (MCE) :
+             . Added "-notifier" option. (Based on a suggestion
+               by Steve Woodard <woodard@peach.kodak.com>.)
+             . Made the "xxx_SEMAPHORE_PID" stuff honour the
+               prog_name stuff.
+             . Casting fixes related to use of time_t.
+           - 06/11/1994 (MCE) :
+             . Several minor corrections for VMS.
+             . Added #define _HPUX_SOURCE for c89 on HP/UX.
+             . Totally reworked time-keeping code to protect it
+               against incorrect implementations of sleep ().
+           - 01/11/1994 (MCE) :
+             . Added SIGUSR1 and SIGUSR2 support, as well as "-enable",
+               "-disable", "-toggle" options.(Thanks to Christopher 
+               Davis <ckd@loiosh.kei.com> for the initial patch.)
+             . Renamed some stuff for better maintainability.
+           - 14/10/1994 (MCE) :
+             . Finally added Xidle support.
+             . Return value of waitpid () on SYSV was being
+               used incorrectly.
+           - 21/09/1994 (MCE) :
+             . Several minor code embellishments.
+             . Better wording of the copyright statement.
+             . Ported to VMS. (Thanks to Brian D. Reed
+               <bdr@cbnewsg.cb.att.com> for providing the 
+               nitty-gritty details.)
+             . Resources now have a (dummy) resource class.
+               (Thanks to JF Bonhomme <johnny@cett.alcatel-alsthom.fr>
+               for pointing out that something had to be done here.)
+             . Reworked resource processing. (Thanks to Joerg Lehrke
+               <jlehrke@wmi.physik.tu-muenchen.de> for providing 
+               the original patch (stripped by me).)
+             . Create a dummy window for proper XKillCLient ()
+               behaviour when using xdm without XDMCP or similar.
+             . Added "-nocloseout" and "-nocloseerr".
+           - 25/08/1994 (MCE) :
+             . More accurate "usage" message.
+           - 11/05/1994 (MCE) :
+             . Corrected a "really stupid typo" ;-).
+           - 23/12/1993 (MCE) :
+             . Improved "#ifdef"s for SYSV. (Thanks to John Somerfield 
+               <John.Somerfield@barclays.co.uk>.)
+           - 13/08/1993 (MCE) :
+             . Added "-cornerredelay" for reasons described in the
+               man page.
+           - 22/06/1993 (MCE) :
+             . Reset screensaver upon locking the screen.
+               (Suggested by Paul Mossip <mossip@vizlab.rutgers.edu>.)
+             . Improved resource usage.
+           - 21/12/1992 (MCE) :
+             . Added code to circumvent a server initialisation bug
+               (OpenWindows 2.0 and 3.0) related to XQueryPointer ().
+               (Thanks to Eric Engstrom <engstrom@src.honeywell.com> 
+               for providing the patch.)
+           - 08/07/1992 (MCE) :
+             . Efficiency improvements and code embellishments
+             . Improved conditional "#include"s etc. (Thanks to
+               Jonathan I. Kamens <jik@pit-manager.mit.edu> and
+               Fred J.R. Appelman <fred@cv.ruu.nl>.)
+             . Moved a couple of premature calls to free ().
+               (Purify sure is a great tool!)
+             . Fixed a race condition related to the `corners'
+               feature.
+             . Fixed a minor initialization bug. 
+           - 11/05/1992 (MCE) :
+             . Close stdout and stderr instead of using "2>&- 1>&-".
+               (Suggested by Rainer Sinkwitz <sinkwitz@ifi.unizh.ch>.)
+             . Added "-noclose" for debugging. 
+           - 06/05/1992 (MCE) :
+             . Fixed a few potential portability problems. (Thanks
+               to Paul Smith <paul_smith@dg.com> again.)
+             . CheckConnection () now works properly on multi-headed
+               displays. (Thanks to Brian ? <brian@natinst.com> for
+               testing the `multi-headed' support.)
+             . Better version of Sleep ().
+             . Recognize X resources for class "Xautolock".
+             . Don't update timer while sighupped.
+             . Switched to vfork () and execl ().
+             . New copyright notice.
+           - 28/04/1992 (MCE) :
+             . Use the X resource manager.
+           - 25/04/1992 (MCE) :
+             . Added the `corners' feature. (Suggested by
+               Neil I. Weisenfeld <weisen@alw.nih.gov>.)
+             . Fixed a problem with pseudo-root windows. 
+               (Thnaks to Chris Sherman <sherman@unx.sas.com>,
+               Nathan Edwards <nedwards@titan.trl.oz.au>, Dave 
+               Hayes <dave@elxr.jpl.nasa.gov>, and Tom McConnell
+               <tmcconne@sedona.intel.com> for pointing out 
+               the problem and testing the patch.)
+             . Added `disable/enable on SIGHUP'. (Suggested by
+               Paul Smith <paul_smith@dg.com>.)
+             . Added support for multi-headed displays. 
+           - 20/04/1992 (MCE) :
+             . Cut Main () into more managable pieces.
+             . Periodically call XQueryPointer ().
+           - 15/04/1992 (MCE) :
+             . Changed the default locker to "xlock 2>&- 1>&-".
+             . Fixed a couple of event mask bugs. (Thanks to
+               Jamie Zawinski <jwz@lucid.com> for running into these.)
+             . Corrected a property type bug in CheckConnection ().
+           - 24/03/1992 (MCE) :
+             . Don't reset the timeout counter after receiving a
+               synthetic or otherwise unexpected event.
+           - 10/03/1992 (SDT & MCE) :
+             . Added code to detect broken server connections.
+           - 06/03/1992 (MCE) :
+             . Re-arranged the event loop in order to detect defunct
+               children as soon as possible.
+           - 25/02/1992 (MCE) :
+             . Added code to detect multiple invocations.
+           - 24/02/1992 (MCE) :
+             . Removed an initialization bug.
+           - 21/02/1992 (MCE) :
+             . Major rewrite.
+           - 12/02/1992 (MCE) :
+             . Hacked around a dxcalendar problem.
+
+ ---------------------------------------------------------------------------
+
+ Copyright 1990, 1992-1999, 2001-2002, 2004, 2007 by  Stefan De Troch and
+ Michel Eyckmans.
+
+ Versions 2.0 and above of xautolock are available under version 2 of the
+ GNU GPL. Earlier versions are available under other conditions. For more
+ information, see the License file.

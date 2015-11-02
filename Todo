@@ -1,0 +1,26 @@
+
+The slowly but ever growing list of things to do and things not to
+------------------------------------------------------------------
+
+These will definitely be done:
+
+<none>
+
+
+Someday in the future I'll look into these:
+
+- Add support for the -display option.
+- Add a killer notification to go with -killpid?
+- Get the resource management to work properly (no more dummy
+  resource class and addition of a proper application defaults file).
+- Consider introducing the techniques used by XSpy.
+- Reintroduce (an updated version of) the idlefile patch that used
+  to sit in the contrib directory during the final 1.x releases.
+
+Probably never:
+
+- Consider adding the -9to5 option suggested by Andrew Miller 
+  (amiller@equity.fbc.com) to not lock during working hours.
+  It's a valid addition in some environments, but adding it 
+  to the "base system" would probably be a case of featuritis.
+- Allow logging duration of inactivity? 

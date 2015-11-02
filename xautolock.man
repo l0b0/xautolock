@@ -1,0 +1,403 @@
+.TH xautolock l "December 28, 2007"
+
+.SH NAME
+xautolock \- fire up programs in case of user inactivity under X
+
+.SH VERSION
+This man page applies to xautolock version 2.2.
+
+.SH SYNOPSIS 
+.TP 10
+.B \fBxautolock\fR
+[\fB\-help\fR] [\fB\-version\fR] 
+[\fB\-time\fR \fImins\fR] [\fB\-locker\fR \fIlocker\fR]
+[\fB\-killtime \fIkillmins\fR\fR] [\fB\-killer\fR \fIkiller\fR]
+[\fB\-notify \fImargin\fR] [\fB\-notifier \fInotifier\fR]
+[\fB\-bell \fIpercent\fR]
+[\fB\-corners\fR \fIxxxx\fR]
+[\fB\-cornerdelay\fR \fIsecs\fR]
+[\fB\-cornerredelay\fR \fIaltsecs\fR]
+[\fB\-cornersize\fR \fIpixels\fR]
+[\fB\-secure\fR]
+[\fB\-resetsaver\fR]
+[\fB\-nocloseout\fR] [\fB\-nocloseerr\fR] [\fB\-noclose\fR]
+[\fB\-disable\fR] [\fB\-enable\fR] [\fB\-toggle\fR] [\fB\-exit\fR]
+[\fB\-locknow\fR] [\fB\-unlocknow\fR] [\fB\-nowlocker\fR \fIlocker\fR]
+[\fB\-restart\fR] [\fB\-detectsleep\fR]
+
+.SH DESCRIPTION 
+Xautolock monitors the user activity on an X Window display. If none is
+detected within \fImins\fR minutes, a program is started as specified by
+the \fB\-locker\fR option. Xautolock will typically be used to lock the
+screen (hence its primary name) but it really doesn't care what program
+you make it start. For this reason, xautolock does not interfere with the
+default X screen saver, unless the \fB\-resetsaver\fR option is used. 
+This implies that it is the job of the \fIlocker\fR or the user to take 
+the appropriate actions if the default screen saver is to be disabled. 
+The only real assumption made by xautolock is that a new countdown starts
+as soon as the \fIlocker\fR exits.
+
+In the presence of the \fB\-notify\fR option, a warning signal will be 
+issued \fImargin\fR seconds before starting the \fIlocker\fR. Warning 
+signals come in two kinds:
+.TP 3
+\(bu
+You can use the \fB\-notifier\fR option to specify the command to be
+issued to perform notification.
+.TP
+\(bu
+Alternatively, you can let xautolock ring the bell. In this case, the
+\fB\-bell\fR option specifies the loudness of the signal in \fIpercent\fR,
+as described in the \fIXBell\fR man page.
+.PP
+
+You can tell xautolock to take special actions when you move the mouse into
+one of the corners of the display and leave it there, by using the
+\fB\-corners\fR, \fB\-cornerdelay\fR, \fB\-cornerredelay\fR and
+\fB\-cornersize\fR options. This works as follows:
+
+The \fIxxxx\fR argument to the \fB\-corners\fR option must consist of exactly
+4 characters from the following set: '0', '+', '-'. Each one of these
+specifies what xautolock should do when the mouse enters a small square area
+located in each of the corners of the screen. The corners are considered in
+the following order: top left, top right, bottom left, bottom right.  A '0'
+indicates that xautolock should ignore the corner. A '+' indicates that
+xautolock should start the \fIlocker\fR after \fIsecs\fR or \fIaltsecs\fR
+seconds (see below for the difference between both), unless the mouse is
+moved or keyboard input is received. A '-' indicates that xautolock should
+not start the \fIlocker\fR at all. The \fIpixels\fR argument specifies the
+size in pixels of the corner areas.
+
+Most users of the \fB\-corners\fR option want the \fIlocker\fR to activate
+within a very short time interval after they move the mouse into a '+' corner.
+This can be achieved by specifying a small value for the \fB\-cornerdelay\fR
+option. However, if the mouse is subsequently left where it is, xautolock
+will almost immediately start a new \fIlocker\fR right after the user quits
+the current one. To prevent this from happening, the \fB\-cornerredelay\fR
+option can be used to specify the time-out interval to be used if and only
+if the mouse is sitting in a `+' corner and has not been moved since the 
+previous \fIlocker\fR exited.
+
+A running xautolock process can be disabled (unless if the \fB\-secure\fR
+option has been specified), in which case it will not attempt to start the
+\fIlocker\fR. To disable an already running xautolock process, use the
+\fB\-disable\fR option. To re-enable it, use \fB\-enable\fR. To toggle it
+between both states, use \fB\-toggle\fR. Using this method is preferable 
+to using sending it SIGSTOP and SIGCONT signals, because while disabled 
+xautolock will still be emptying its event queue. 
+
+A running xautolock process can also be told to exit (unless if the 
+\fB\-secure\fR option has been specified). To do this, use the
+\fB\-exit\fR option.
+
+The \fB\-killtime\fR and \fB\-killer\fR options allow, amongst other
+things, to implement an additional automatic logout, on top of the
+automatic screen locking. In the presence of one or both of these
+options, a secondary timeout will be triggered \fIkillmins\fR after
+starting the \fIlocker\fR (unless user activity is detected in the
+mean time).  Upon expiration of this secondary timer, the \fIkiller\fR
+program is run. Note that, despite the name of the options, xautolock
+really doesn't care what the \fIkiller\fR does in reality. If it
+doesn't (indirectly) cause xautolock to get killed, and assuming that
+no user activity is detected, the secondary trigger will periodically
+expire every \fIkillmins\fR minutes for as long as the \fIlocker\fR runs.
+
+In combination with \fB\-killtime\fR and \fB\-killer\fR, the \fB\-secure\fR
+option allows system administrators to enforce xautolock as a part of their
+security procedures, and to prevent people from locking shared displays for
+an excessive amount of time. One way to achieve this is to start xautolock
+(using \fB-secure\fR and optionally \fB\-killtime\fR and \fB\-killer\fR)
+from within XDM's Xsession file in such a way that the session
+automatically ends if xautolock itself is killed.
+
+By default xautolock closes stdout and stderr. This prevents the \fIlocker\fR
+from writing error messages to these files in case you manually lock your
+display.  The \fB\-nocloseout\fR, \fB\-nocloseerr\fR and \fB\-noclose\fR
+options cause xautolock to not close stdout and/or stderr. On some platforms
+users of xnlock will need to use \fB\-nocloseout\fR, in order to make xnlock's
+witty sayings show up. These options can also be used for debugging cases in
+which \fIlocker\fR invocation is not successful.
+
+Xautolock is capable of managing multi-headed displays.
+
+.SH OPTIONS
+.TP 16
+\fB\-help\fR
+Print a help message and exit.
+.TP 
+\fB\-version\fR
+Print the version number and exit.
+.TP 
+\fB\-time\fR
+Specifies the primary timeout interval. The default is 10 minutes,
+the minimum is 1 minute, and the maximum is 1 hour.
+.TP 
+\fB\-locker\fR
+Specifies the \fIlocker\fR to be used. The default is xlock. Notice that if
+\fIlocker\fR contains multiple words, it must be specified between quotes.
+In order to use your PATH to locate the program, xautolock feeds the
+\fIlocker\fR command to /bin/sh, so it should be understandable for
+whatever shell your /bin/sh is. Because this typically is a Bourne
+shell, ~ expansion most likely will not work. 
+.TP 
+\fB\-killtime\fR
+Specifies the secondary timeout in minutes after starting the \fIlocker\fR.
+This timer is only active as long as the \fIlocker\fR is running, and is 
+reset each time user activity is detected. If it expires before the 
+\fIlocker\fR exits, the \fIkiller\fR command is run. The default is
+20 minutes, the minimum is 10 minutes, and the maximum is 2 hours.
+This option is only useful in conjunction with \fB\-killer\fR.
+.TP 
+\fB\-killer\fR
+Specifies the \fIkiller\fR to be used. The default is none. Notice that 
+if \fIkiller\fR contains multiple words, it must be specified between
+quotes.  In order to use your PATH to locate the program, xautolock feeds 
+the \fIkillr\fR command to /bin/sh, so it should be understandable 
+for whatever shell your /bin/sh is. Because this typically is a Bourne 
+shell, ~ expansion most likely will not work.
+.TP 
+\fB\-notify\fR
+Warn the user \fImargin\fR seconds before locking. The default is to not
+warn the user. If used in conjunction with \fB\-cornerdelay\fR or 
+\fB\-cornerredelay\fR, the notification margin iused is the minimum of
+\fImargin\fR, \fIsecs\fR and/or \fIaltsecs\fR.
+.TP
+\fB\-notifier\fR
+Specifies the \fInotifier\fR to be used. The default is none. This
+option is only useful in conjunction with \fB\-notify\fR. Notice that 
+if \fInotifier\fR contains multiple words, it must be specified between
+quotes.  In order to use your PATH to locate the program, xautolock feeds 
+the \fInotifier\fR command to /bin/sh, so it should be understandable 
+for whatever shell your /bin/sh is. Because this typically is a Bourne 
+shell, ~ expansion most likely will not work.
+.TP
+\fB\-bell\fR
+Specifies the loudness of the notification signal in the absence of the
+\fB\-notifier\fR option. The default is 40 percent. This option is only 
+useful in conjunction with \fB\-notify\fR.
+.TP 
+\fB\-corners\fR
+Define special actions to be taken when the mouse enters one of the
+corners of the display. The default is 0000, which means that no special
+action is taken.
+.TP 
+\fB\-cornerdelay\fR
+Specifies the number of seconds to wait before reacting to the mouse
+entering a '+' corner. The default is 5 seconds.
+.TP 
+\fB\-cornerredelay\fR
+Specifies the number of seconds to wait
+before reacting again if the current \fIlocker\fR exits while the mouse is
+sitting in a '+' corner. The default is for \fIaltsecs\fR to equal
+\fIsecs\fR.
+.TP 
+\fB\-cornersize\fR
+Specifies the size in pixels of the corner areas. The default is 10 pixels.
+.TP 
+\fB\-resetsaver\fR
+Causes xautolock to reset the X screen saver after successfully starting 
+the \fIlocker\fR. This is typically used in case the locker is not
+really intended to lock the screen, but to replace the default X screen
+saver. Note that the default screen saver is not disabled, only reset.
+Also note that using \fB\-resetsaver\fR will inferfere with the DPMS
+monitors, as the power down time out will also be also reset. The
+default is not to reset the screen saver.
+
+See the \fIxset\fR man page for more information about managing the 
+X screen saver.
+.TP 
+\fB\-detectsleep\fR
+Instructs xautolock to detect that computer has been put to sleep. 
+This is done by detecting that time has jumped by more than 3 seconds. 
+When this occurs, the lock timer is reset and locker program is not
+launched even if primary timeout has been reached. This option is 
+typically used to avoid locker program to be launched when awaking a 
+laptop computer.
+.TP 
+\fB\-secure\fR
+Instructs xautolock to run in secure mode. In this mode, xautolock
+becomes imune to the effects of \fB\-enable\fR, \fB\-disable\fR, 
+\fB\-toggle\fR, and \fB\-exit\fR. The default is to honour these 
+actions.
+.TP 
+\fB\-nocloseout\fR
+Don't close stdout.
+.TP 
+\fB\-nocloseerr\fR
+Don't close stderr.
+.TP 
+\fB\-noclose\fR
+Close neither stdout nor stderr.
+.TP 
+\fB\-disable\fR
+Disables an already running xautolock process (if there is one, and
+it does not have \fB\-secure\fR switched on). In any case, the current
+invocation of xautolock exits.
+.TP 
+\fB\-enable\fR
+Enables an already running xautolock process (if there is one, and
+it does not have \fB\-secure\fR switched on). In any case, the current
+invocation of xautolock exits.
+.TP 
+\fB\-toggle\fR
+Toggles an already running xautolock process (if there is one, and
+it does not have \fB\-secure\fR switched on) between its disabled and
+enabled modes of operation. In any case, the current invocation of
+xautolock exits.
+.TP 
+\fB\-exit\fR
+Causes an already running xautolock process (if there is one, and
+it does not have \fB\-secure\fR switched on) to exit. In any case,
+the current invocation of xautolock also exits.
+.TP 
+\fB\-locknow\fR
+Causes an already running xautolock process (if there is one, if
+it does not have \fB\-secure\fR switched on, and is not currently
+disabled) to lock the display immediately. In any case, the current
+invocation of xautolock exits.
+.TP 
+\fB\-unlocknow\fR
+Causes an already running xautolock process (if there is one, if
+it does not have \fB\-secure\fR switched on, and is not currently
+disabled) to unlock the display immediately (if it's locked) by
+sending the \fIlocker\fR a SIGTERM signal. In any case, the current
+invocation of xautolock exits.
+.TP 
+\fB\-nowlocker\fR
+Specifies the \fIlocker\fR to be used if the lock is initiated with 
+\fB\-locknow\fR option. The default is to use the \fIlocker\fR
+program given with \fB\-locker\fR option, which defaults to xlock. 
+.TP
+\fB\-restart\fR
+Causes an already running xautolock process (if there is one and 
+it does not have \fB\-secure\fR switched on) to restart. In any
+case, the current invocation of xautolock exits.
+
+.SH RESOURCES
+.TP 16
+.B time 
+Specifies the primary timeout. Numerical.
+.TP 
+.B locker 
+Specifies the \fIlocker\fR. No quotes are needed, even if the 
+\fIlocker\fR command contains multiple words.
+.TP 
+.B killtime
+Specifies the secondary timeout. Numerical.
+.TP   
+.B killer
+Specifies the \fIkiller\fR. No quotes are needed, even if the
+\fIkiller\fR command contains multiple words.
+.TP   
+.B notify 
+Specifies the notification margin. Numerical.
+.TP 
+.B notifier 
+Specifies the \fInotifier\fR. No quotes are needed, even if the 
+\fInotifier\fR command contains multiple words.
+.TP 
+.B bell 
+Specifies the notification loudness. Numerical.
+.TP 
+.B corners 
+Specifies the corner behaviour, as explained above.
+.TP 
+.B cornersize 
+Specifies the size of the corner areas. Numerical.
+.TP 
+.B cornerdelay 
+Specifies the delay of a '+' corner. Numerical.
+.TP 
+.B cornerredelay 
+Specifies the alternative delay of a '+' corner. Numerical.
+.TP   
+.B resetsaver
+Reset the default X screen saver. Boolean.
+.TP   
+.B nocloseout
+Don't close stdout. Boolean.
+.TP   
+.B nocloseerr
+Don't close stderr. Boolean.
+.TP   
+.B noclose 
+Close neither stdout nor stderr. Boolean.
+
+.PP
+Resources can be specified in your \fI~/.Xresources\fR or \fI~/.Xdefaults\fR
+file (whichever your system uses) and merged via the xrdb(1) command. They
+can be specified either for class \fIXautolock\fR, or for whatever name 
+your xautolock program has been given. This can be useful in case xautolock
+is to be used for other purposes than simply locking the screen. For example:
+if you have two copies of xautolock, one called "xmonitor", and one called 
+"xlogout", then both will honour the following:
+.IP
+\fBXautolock.corners: ++++\fR
+.PP
+In addition, "xmonitor" will honour:
+.IP
+\fBxmonitor.cornersize: 10\fR
+.PP
+while "xlogout" will honour:
+.IP
+\fBxlogout.cornersize: 5\fR
+.PP
+Each command line option takes precedence over the corresponding
+(default) resource specification.
+
+.SH KNOWN\ BUGS 
+
+The \fB\-disable\fR, \fB\-enable\fR, \fB\-toggle\fR, \fB\-exit\fR,
+\fB\-locknow\fR, \fB\-unlocknow\fR, and \fB\-restart\fR options depend 
+on access to the X server to do their work. This implies that they will
+be suspended in case some other application has grabbed the server 
+all for itself.
+
+If, when creating a window, an application waits for more than 30 seconds 
+before selecting KeyPress events on non-leaf windows, xautolock may
+interfere with the event propagation mechanism. This effect is theoretical
+and has never been observed in real life. It can only occur in case
+xautolock has been compiled without support for both the Xidle
+and the MIT ScreenSaver extensions, or in case the X server does 
+not support these extensions.
+
+xautolock does not always properly handle the secure keyboard mode of 
+terminal emulators like xterm, since that mode will prevent xautolock 
+from noticing the keyboard events occurring on the terminal. Therefore,
+xautolock sometimes thinks that there is no keyboard activity while in 
+reality there is. This can only occur in case xautolock has been 
+compiled without support for both the Xidle and the MIT ScreenSaver
+extensions, or in case the X server does not support these extensions.
+
+xautolock does not check whether \fInotifier\fR and/or \fIlocker\fR are
+available.
+
+The xautolock resources have dummy resource classes. 
+
+.SH SEE\ ALSO
+X(1),
+xset(1),
+xlock(1),
+xnlock(1),
+xscreensaver(1).
+
+.SH COPYRIGHT
+Copyright 1990, 1992-1999, 2001-2002, 2004, 2007 by Stefan De Troch and
+Michel Eyckmans.
+
+Versions 2.0 and above of xautolock are available under version 2 of the
+GNU GPL. Earlier versions are available under other conditions. For more
+information, see the License file.
+
+.SH AUTHORS   
+Xautolock was conceived, written, and performed by:
+
+Michel Eyckmans (MCE) 
+.br
+Stefan De Troch 
+
+Please send queries for help, feature suggestions, bug reports, etc.
+to mce@scarlet.be.
+
+.SH SPECIAL\ THANKS\ TO
+Kris Croes             
