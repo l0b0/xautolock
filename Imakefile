@@ -64,6 +64,6 @@ DEFINES         = $(PROTOTYPES) $(VOIDSIGNAL) $(VFORK) \
 ComplexProgramTarget(xautolock)
 
 clean::
-	$(RM) $(OBJS)
+	$(RM) $(OBJS) Makefile
 
 distclean:: clean
