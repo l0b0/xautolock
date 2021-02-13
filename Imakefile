@@ -5,11 +5,7 @@
 /*
  *  Tell it what extensions to use.
  */
-#ifndef HPArchitecture
 #define HasScreenSaver 1  /* By default assume to have MIT ScreenSaver, */
-#else
-#define HasScreenSaver 0  /* except on HP machines (sigh...)            */
-#endif
 
 #define HasXidle       0  /* By default assume not to have Xidle.       */
 
