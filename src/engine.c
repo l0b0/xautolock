@@ -210,7 +210,7 @@ evaluateTriggers (Display* d)
 #else /* VMS */
   if (lockerPid)
   {
-#if !defined (UTEKV) && !defined (SYSV) && !defined (SVR4)
+#if !defined (UTEKV) && !defined (SYSV) && !defined (SVR4) && !defined (__GLIBC__)
     union wait  status;      /* childs process status */
 #else /* !UTEKV && !SYSV && !SVR4 */
     int         status = 0;  /* childs process status */
@@ -221,7 +221,7 @@ evaluateTriggers (Display* d)
       (void) kill (lockerPid, SIGTERM);
     }
 
-#if !defined (UTEKV) && !defined (SYSV) && !defined (SVR4)
+#if !defined (UTEKV) && !defined (SYSV) && !defined (SVR4) && !defined (__GLIBC__)
     if (wait3 (&status, WNOHANG, 0))
 #else /* !UTEKV && !SYSV && !SVR4 */
     if (waitpid (-1, &status, WNOHANG)) 
