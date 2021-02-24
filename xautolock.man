@@ -216,7 +216,7 @@ laptop computer.
 .TP 
 \fB\-secure\fR
 Instructs xautolock to run in secure mode. In this mode, xautolock
-becomes imune to the effects of \fB\-enable\fR, \fB\-disable\fR, 
+becomes immune to the effects of \fB\-enable\fR, \fB\-disable\fR, 
 \fB\-toggle\fR, and \fB\-exit\fR. The default is to honour these 
 actions.
 .TP 
