@@ -1,4 +1,4 @@
-.TH xautolock l "December 28, 2007"
+.TH xautolock 1 "December 28, 2007"
 
 .SH NAME
 xautolock \- fire up programs in case of user inactivity under X
