@@ -255,6 +255,8 @@ addExecToCommand (const char** command)
   *  actually consists of multiple ones, we need to look for `;'
   *  characters first. We can only err on the safe side here...
   */
+  /* FIXME: This would also need to handle other stuff like e.g. & */
+#if 0
   if (!strchr (*command, ';'))
   {
     char* tmp;
@@ -262,6 +264,14 @@ addExecToCommand (const char** command)
 		    "exec %s", *command);
     *command = tmp;
   }
+#else
+  /* Create a copy of the string or else XrmDestroyDatabase would free() that
+   * string from underneath us.
+   */
+  char* tmp = newArray (char, strlen (*command) + 1);
+  (void) strcpy (tmp, *command);
+  *command = tmp;
+#endif
 }
 #endif /* !VMS */
 
