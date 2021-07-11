@@ -31,7 +31,10 @@
 void 
 queryIdleTime (Display* d, Bool use_xidle)
 {
-  Time idleTime = 0; /* millisecs since last input event */
+  int dummy;
+  CARD16 standby, suspend, off;
+  CARD16 state;
+  BOOL onoff;  Time idleTime = 0; /* millisecs since last input event */
 
 #ifdef HasXidle
   if (use_xidle)
@@ -47,6 +50,33 @@ queryIdleTime (Display* d, Bool use_xidle)
     XScreenSaverQueryInfo (d, DefaultRootWindow (d), mitInfo);
     idleTime = mitInfo->idle;
 #endif /* HasScreenSaver */
+  }
+
+  if (DPMSQueryExtension(d, &dummy, &dummy)) {
+    if (DPMSCapable(d)) {
+      DPMSGetTimeouts(d, &standby, &suspend, &off);
+      DPMSInfo(d, &state, &onoff);
+
+      if (onoff) {
+        switch (state) {
+          case DPMSModeStandby:
+            if (idleTime < (unsigned) (standby * 1000))
+              idleTime += (standby * 1000);
+            break;
+          case DPMSModeSuspend:
+            if (idleTime < (unsigned) ((suspend + standby) * 1000))
+              idleTime += ((suspend + standby) * 1000);
+            break;
+          case DPMSModeOff:
+            if (idleTime < (unsigned) ((off + suspend + standby) * 1000))
+              idleTime += ((off + suspend + standby) * 1000);
+            break;
+          case DPMSModeOn:
+          default:
+            break;
+        }
+      }
+    } 
   }
 
   if (idleTime < 1000)  

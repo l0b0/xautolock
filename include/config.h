@@ -65,6 +65,7 @@
 
 #ifdef HasScreenSaver
 #include <X11/extensions/scrnsaver.h>
+#include <X11/extensions/dpms.h>
 #endif /* HasScreenSaver */
 
 #ifndef HasVFork
